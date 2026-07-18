@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24.15.0'
+          node-version: '24.15.0'   # matches cPanel's Node.js App version
           cache: 'npm'
 
       - name: Install dependencies
@@ -30,4 +30,27 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
-      # CD (deploy to cPanel) steps come next, once this CI part is confirmed working
+      - name: Prune devDependencies for deployment
+        run: npm prune --omit=dev
+
+      - name: Create restart trigger file
+        run: |
+          mkdir -p tmp
+          date > tmp/restart.txt
+
+      - name: Deploy to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: ./
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/.cache/**
+            **/src/**
+            **/.next/cache/**
+            **/*.md
+          state-name: .ftp-deploy-sync-state.json
