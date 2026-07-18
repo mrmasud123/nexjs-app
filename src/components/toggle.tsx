@@ -13,9 +13,9 @@ export function ThemeToggle({
 }) {
     const { resolvedTheme, setTheme } = useTheme();
     const [mounted, setMounted] = React.useState(false);
-
     // Avoids a hydration mismatch: the server doesn't know the user's
     // stored preference, so we render a stable placeholder until mounted.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional hydration-safe mount flag
     React.useEffect(() => setMounted(true), []);
 
     if (!mounted) {
