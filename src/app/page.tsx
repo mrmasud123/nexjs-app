@@ -129,7 +129,7 @@ export default function Home() {
                 {/* Hero */}
                 <section className="relative overflow-hidden border-b border-border">
                     <div
-                        className="absolute inset-0 opacity-[0.4] bg-[linear-gradient(var(--border)_1px,transparent_1px),linear-gradient(90deg,var(--border)_1px,transparent_1px)] [background-size:32px_32px] mask-[radial-gradient(ellipse_60%_60%_at_50%_0%,black,transparent)]"
+                        className="absolute inset-0 opacity-[0.4] [background-image:linear-gradient(var(--border)_1px,transparent_1px),linear-gradient(90deg,var(--border)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,black,transparent)]"
                         aria-hidden="true"
                     />
 

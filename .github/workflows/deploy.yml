@@ -1,10 +1,8 @@
 name: Deploy to cPanel
-
 on:
   push:
     branches:
-      - main   # change to 'master' if that's your default branch
-
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,7 +13,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24.15.0'   # matches cPanel's Node.js App version
+          node-version: '20.20.2'   # match cPanel exactly
           cache: 'npm'
 
       - name: Install dependencies
@@ -30,10 +28,15 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
-      - name: Create restart trigger file
+      - name: Assemble deploy folder
         run: |
-          mkdir -p tmp
-          date > tmp/restart.txt
+          mkdir -p deploy
+          cp -r .next/standalone/. deploy/
+          mkdir -p deploy/.next
+          cp -r .next/static deploy/.next/static
+          cp -r public deploy/public
+          mkdir -p deploy/tmp
+          date > deploy/tmp/restart.txt
 
       - name: Deploy to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -41,14 +44,6 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./
-          server-dir: ./
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            node_modules/**
-            **/src/**
-            **/.next/cache/**
-            **/*.md
+          local-dir: ./deploy/
+          server-dir: /myapp/
           state-name: .ftp-deploy-sync-state.json
